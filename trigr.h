@@ -1,23 +1,23 @@
 #ifndef TRIGR_H
 #define TRIGR_H
 
-#define TC_TYPE_NONE    0 // empty condition
-#define TC_TYPE_DATA    1 // data condition
-#define TC_TYPE_ADDRESS 2 // address condition
+#define TC_TYPE_NONE    0
+#define TC_TYPE_DATA    1
+#define TC_TYPE_ADDRESS 2
 
-#define TC_RW_WRITE     0 // write access
-#define TC_RW_READ      1 // read access
-#define TC_RW_DONTCARE  3 // don't care access
+#define TC_RW_WRITE     0
+#define TC_RW_READ      1
+#define TC_RW_DONTCARE  3
 
-#define TC_LOGIC_ASSIGN 0 // assign
-#define TC_LOGIC_OR     1 // assign with or
-#define TC_LOGIC_AND    2 // assign with and
+#define TC_LOGIC_ASSIGN 0
+#define TC_LOGIC_OR     1
+#define TC_LOGIC_AND    2
 
 struct triggerCond_t {
-  uint8_t type  : 3; // 0: none, 1:data, 2:address
-  uint8_t neg   : 1; // 0: no-negate, 1: negate
-  uint8_t rw    : 2; // 00: write, 01: read, 11:don't care
-  uint8_t logic : 2; // 00:none, 01:or, 10:and
+  uint8_t type  : 3;
+  uint8_t neg   : 1;
+  uint8_t rw    : 2;
+  uint8_t logic : 2;
   union {
     uint8_t dataFrom;
     uint16_t addrFrom;

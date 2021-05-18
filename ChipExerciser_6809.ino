@@ -10,7 +10,7 @@
 #define INTVECTORRANGEMASK 0x000f
 
 uint8_t interruptVector[INTVECTORSIZE] = {
-// MS    LS
+// MSB   LSB
   0x00, 0x00, // FFF0 FFF1 Reserved
   0x00, 0x00, // FFF2 FFF3 SWI3
   0x00, 0x00, // FFF4 FFF5 SWI2
@@ -21,8 +21,23 @@ uint8_t interruptVector[INTVECTORSIZE] = {
   0x10, 0x00, // FFFE FFFF /RESET
 };
 
+void printStartup() {
+  Serial.println();
+  Serial.println("    _________________________");
+  Serial.println("   /                        /|");
+  Serial.println("  _/  6809 Chip Exerciser  //");
+  Serial.println(" /________________________//");
+  Serial.println(" |U_U_U_U_U_U_U_U_U_U_U_U_/");
+  Serial.println("  | | | | | | | | | | | |");
+  Serial.println();
+  
+  printHelp();
+  Serial.println();
+}
+
 void setup() {
   resetAll();
+  
   // Addres bus low byte.
   // PA0 .. PA7: A0 .. A7
   // Address bus high byte.
@@ -48,28 +63,14 @@ void setup() {
   // XXX are unused.
   clockAsOutput();
 
-  // Initialize signals.
   resetLo();
-  clock();
 
-  delay(500);
-
-  // LED off
   pinMode(LED_BUILTIN, OUTPUT);
   digitalWrite(LED_BUILTIN, LOW);
 
   Serial.begin(115200);
-
-  Serial.println();
-  Serial.println("    _________________________");
-  Serial.println("   /                        /|");
-  Serial.println("  _/  6809 Chip Exerciser  //");
-  Serial.println(" /________________________//");
-  Serial.println(" |U_U_U_U_U_U_U_U_U_U_U_U_/");
-  Serial.println("  | | | | | | | | | | | |");
-  Serial.println();
-  printHelp();
-  Serial.println();
+  printStartup();
+  
   initRam();
 
   //getCardInfo();
@@ -84,7 +85,6 @@ void loop() {
   static uint16_t uaddr = 0;
   static uint16_t ram_address = 0;
 
-  // Toggle the clock to keep the processor running.
   clk = ~clk;
   clock(clk);
 
@@ -105,7 +105,7 @@ void loop() {
     data(udata);
   }
   else {
-    if (urw) { // Read access
+    if (urw) {
       udata = ram[ram_address];
       data(udata);
     }
@@ -127,7 +127,6 @@ void loop() {
     cclkE = 'H';
     edgeE = 1;
 
-    // Write access on raising edge of E.
     if (!urw) {
       ram[ram_address] = udata;
     }
@@ -137,9 +136,6 @@ void loop() {
     edgeE = 2;
   ONEND
 
-  //
-  // Processor status output and triggering.
-  //
   if (count < maxCount) {
     if (count == 0) {
       Serial.println("count CLK E   R/W ADDR (RAMA) DATA");
